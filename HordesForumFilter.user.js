@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Hordes - Forum Filter
+// @name         Hordes Forum Filter
 // @description  Ce script permet de filtrer les forums de la section "Forum Monde".
 // @icon         https://myhordes.fr/build/images/emotes/rptext.4fd67236.gif
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @author       Eliam
 // @match        https://myhordes.fr/*
 // @match        https://myhordes.de/*
@@ -32,18 +32,18 @@
             // Créer le conteneur des boutons radio
             const radioContainer = document.createElement('div');
             radioContainer.className = 'row-flex';
-            radioContainer.style.marginBottom = '0'; // Supprimer la marge basse
+            radioContainer.style.marginTop = '5px';
+            radioContainer.style.marginBottom = '10px';
             radioContainer.style.display = 'flex'; // Afficher les éléments en ligne
             radioContainer.style.alignItems = 'center'; // Centrer verticalement les éléments
-            radioContainer.style.justifyContent = 'flex-start'; // Aligner à gauche
-            radioContainer.style.gap = '10px'; // Ajouter un espace entre chaque élément
+            radioContainer.style.width = 'auto';
 
-            // Ajouter les boutons radio avec drapeaux
+            // Ajouter les boutons radio avec drapeaux et libellés des langues
             const languages = [
-                { value: 'fr', flag: '/build/images/lang/fr.22a557fa.png', title: 'Forums Monde', workshop: "L'Atelier artistique" },
-                { value: 'en', flag: '/build/images/lang/en.7e6d6ab4.png', title: 'World Forum', workshop: 'The Artistic Workshop' },
-                { value: 'es', flag: '/build/images/lang/es.5ff50709.png', title: 'Foro Mundial', workshop: 'El Taller artístico' },
-                { value: 'de', flag: '/build/images/lang/de.11b4c9d3.png', title: 'Weltforum', workshop: 'Die Künstlerwerkstatt' },
+                { value: 'fr', label: 'Français' , flag: '/build/images/lang/fr.22a557fa.png', title: 'Forums Monde', workshop: "L'Atelier artistique" },
+                { value: 'en', label: 'English' , flag: '/build/images/lang/en.7e6d6ab4.png', title: 'World Forum', workshop: 'The Artistic Workshop' },
+                { value: 'es', label: 'Español' , flag: '/build/images/lang/es.5ff50709.png', title: 'Foro Mundial', workshop: 'El Taller artístico' },
+                { value: 'de', label: 'Deutsch', flag: '/build/images/lang/de.11b4c9d3.png', title: 'Weltforum', workshop: 'Die Künstlerwerkstatt' },
             ];
 
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'fr';
@@ -73,6 +73,10 @@
                 radio.checked = lang.value === savedLanguage;
                 radio.style.marginRight = '3px'; // Ajoute un pixel d'espacement entre la case à cocher et le drapeau
 
+                const languageLabel = document.createElement('span');
+                languageLabel.textContent = lang.label; // Ajouter le libellé de la langue
+                languageLabel.style.marginLeft = '3px'; // Ajouter un petit espacement après le drapeau
+
                 radio.addEventListener('change', () => {
                     filterForums(radio.value);
                     localStorage.setItem('selectedLanguage', radio.value); // Enregistre la langue sélectionnée
@@ -81,16 +85,12 @@
 
                 label.appendChild(radio);
                 label.appendChild(flagImg);
+                label.appendChild(languageLabel); // Ajoute le libellé après le drapeau
                 cell.appendChild(label);
                 radioContainer.appendChild(cell);
             });
 
-            // Insérer le conteneur des boutons radio avant le titre h5
-            forumTitle.parentNode.insertBefore(radioContainer, forumTitle);
-
-            // Marge du titre h5
-            forumTitle.style.marginTop = '5px';
-            forumTitle.style.marginBottom = '15px';
+            forumTitle.parentNode.insertBefore(radioContainer, forumTitle.nextSibling);
 
             // Affiche les forums selon la langue enregistrée initialement
             filterForums(savedLanguage);
